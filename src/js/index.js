@@ -1,19 +1,11 @@
-import * as p5 from 'p5';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Calendar from './calendar';
 import CalendarView from './calendarView';
+import {getCalendarCategories, getCalendarData} from "./dataRepository";
 
-let mockData = [
-    false, true, true, false, true, false, true,
-    true, true, true, true, false, true, true,
-    true, false, true, true, true, true, true,
-    true, true, false, true, true, false, false,
-    true, true, true
-];
-
-console.log('test');
+getCalendarData("climbing", (data) => console.log(data));
 
 document.addEventListener('DOMContentLoaded', function () {
     updateDateElement();
@@ -27,7 +19,7 @@ function getCalendarContainerWidth() {
 function initCalendarView() {
     console.log("div width" + getCalendarContainerWidth());
     let calendarView = new CalendarView(getCalendarContainerWidth());
-    let calendar = new Calendar([mockData]);
+    let calendar = new Calendar();
 
     let sketch = (p) => {
         p.setup = () => {
@@ -37,13 +29,11 @@ function initCalendarView() {
         p.draw = () => {
             p.background(255);
             p.noStroke();
-            calendarView.drawEmptyCells(p, calendar);
-            //calendarView.drawCaptions(p, calendar);
-            calendarView.draw(p, calendar)
+            calendarView.draw(p, calendar);
         };
     };
 
-    new p5(sketch, 'calendarContainer');
+    new p5(sketch, document.getElementById('calendarContainer'));
 }
 
 function updateDateElement() {

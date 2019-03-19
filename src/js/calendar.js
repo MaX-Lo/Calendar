@@ -1,8 +1,25 @@
+let mockData = [
+    [
+        false, true, true, false, true, false, true,
+        true, true, true, true, false, true, true,
+        true, false, true, true, true, true, true,
+        true, true, false, true, true, false, false,
+        true, true, false
+    ]
+];
+
 export default class Calendar {
-    constructor(monthsData) {
-        this.monthLengths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-        this.monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    constructor(monthsData = mockData) {
         this.monthsData = monthsData;
+    }
+
+    setData(data) {
+        this.monthsData = data;
+    }
+
+    getData() {
+        return this.monthsData;
     }
 
     setMonthData(monthNum, data) {
@@ -19,11 +36,13 @@ export default class Calendar {
         return this.monthsData[monthNum];
     }
 
-    daysInMonth(month) {
-        return this.monthLengths[month];
+    static daysInMonth(month) {
+        let monthLengths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        return monthLengths[month];
     }
 
-    monthName(monthNum) {
-        return this.monthNames[monthNum];
+    static monthName(monthNum) {
+        let monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return monthNames[monthNum];
     }
 }

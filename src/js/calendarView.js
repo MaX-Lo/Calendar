@@ -1,3 +1,5 @@
+import Calendar from "./calendar";
+
 export default class CalendarView {
     constructor(width) {
         this.width = width;
@@ -36,11 +38,17 @@ export default class CalendarView {
         return this.width;
     }
 
-    drawEmptyCells(p, calendar) {
+    draw(p, calendar) {
+        this.drawEmptyCells(p);
+        this.drawCaptions(p);
+        this.drawContent(p, calendar);
+    }
+
+    drawEmptyCells(p) {
         let x = 0;
         let y = 50;
         for (let i = 0; i < 12; i++) {
-            let data = Array(calendar.daysInMonth(i)).fill(false);
+            let data = Array(Calendar.daysInMonth(i)).fill(false);
             this.drawMonthLineWise(p, x, y, data);
             x += this.getMonthXOffset();
             if (i % 6 === 5) {
@@ -50,13 +58,13 @@ export default class CalendarView {
         }
     }
 
-    drawCaptions(p, calendar) {
+    drawCaptions(p) {
         let x = 0;
         let y = 32;
         p.textSize(32);
         p.fill(75);
         for (let i = 0; i < 12; i++) {
-            let caption = calendar.monthName(i);
+            let caption = Calendar.monthName(i);
             p.text(caption, x, y);
             x += this.getMonthXOffset();
             if (i % 6 === 5) {
@@ -66,11 +74,11 @@ export default class CalendarView {
         }
     }
 
-    draw(p, calendar) {
+    drawContent(p, calendar) {
         let x = 0;
         let y = 50;
 
-        for (let i = 0; i < calendar.monthsData.length; i++) {
+        for (let i = 0; i < calendar.getData().length; i++) {
             this.drawMonthLineWise(p, x, y, calendar.getMonthData(i));
             x += this.getMonthXOffset();
             if (i % 6 === 5) {
@@ -80,11 +88,11 @@ export default class CalendarView {
         }
     }
 
-    drawMonthLineWise(p, startX, startY, dayData) {
+    drawMonthLineWise(p, startX, startY, monthData) {
         let x = startX;
         let y = startY;
-        for (let i = 0; i < dayData.length; i++) {
-            if (dayData[i]) {
+        for (let i = 0; i < monthData.length; i++) {
+            if (monthData[i]) {
                 p.fill(200, 0, 0);
             } else {
                 p.fill(230);
