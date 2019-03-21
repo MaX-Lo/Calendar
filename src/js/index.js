@@ -16,7 +16,10 @@ document.addEventListener('DOMContentLoaded', function () {
     updateDateElement();
 });
 
+window.addEventListener('resize', () => calendarView.setWidth(getCalendarContainerWidth()));
+
 window.setInterval(switchCalendar, 2000);
+
 
 function switchCalendar() {
     currentCalendarIndex = (currentCalendarIndex + 1) % calendars.length;
@@ -70,6 +73,9 @@ function initCalendarView() {
             p.noStroke();
             calendarView.draw(p, calendars[currentCalendarIndex]);
         };
+        p.windowResized = () => {
+            p.resizeCanvas(calendarView.getWidth(), calendarView.getHeight())
+        }
     };
 
     let P5 = new p5(sketch, document.getElementById('calendarContainer'));

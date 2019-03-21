@@ -3,7 +3,6 @@ import Calendar from "./calendar";
 export default class CalendarView {
     constructor(width = 0) {
         this.width = width;
-        this.textSize = 32;
     }
 
     getDaySize() {
@@ -31,7 +30,7 @@ export default class CalendarView {
     }
 
     getHeight() {
-        return 2 * this.getMonthYOffset() + 2.5 * this.textSize;
+        return 2 * this.getMonthYOffset() + 2.5 * this.getTextSize();
     }
 
     setWidth(width) {
@@ -40,6 +39,10 @@ export default class CalendarView {
 
     getWidth() {
         return this.width;
+    }
+
+    getTextSize() {
+        return this.width / 30;
     }
 
     draw(p, calendar) {
@@ -65,7 +68,7 @@ export default class CalendarView {
     drawCaptions(p) {
         let x = 0;
         let y = 32;
-        p.textSize(32);
+        p.textSize(this.getTextSize());
         p.fill(75);
         for (let i = 0; i < 12; i++) {
             let caption = Calendar.monthName(i);
@@ -73,7 +76,7 @@ export default class CalendarView {
             x += this.getMonthXOffset();
             if (i % 6 === 5) {
                 x -= 6 * this.getMonthXOffset();
-                y += 2 * this.getMonthYOffset() + this.textSize;
+                y += 2 * this.getMonthYOffset() + this.getTextSize();
             }
         }
     }
