@@ -1,39 +1,46 @@
-let mockData = [
-    [
-        false, true, true, false, true, false, true,
-        true, true, true, true, false, true, true,
-        true, false, true, true, true, true, true,
-        true, true, false, true, true, false, false,
-        true, true, false
-    ]
-];
-
 export default class Calendar {
-
-    constructor(monthsData = mockData) {
-        this.monthsData = monthsData;
+    get name() {
+        return this._name;
     }
 
-    setData(data) {
-        this.monthsData = data;
+    set name(value) {
+        this._name = value;
     }
 
-    getData() {
-        return this.monthsData;
+    constructor(name = 'unknown name',color = [0, 170, 200], activityList = []) {
+        this.color = color;
+        this.activityList = activityList;
+        this.setActivities(activityList)
+        this._name = name;
     }
 
-    setMonthData(monthNum, data) {
-        if (monthNum <= 0 || monthNum > 12) {
-            throw `Month num has to be in range 1 to 12. Was: ${monthNum}`;
+    setActivities(activityList) {
+        this.activityList = [];
+        for (let activity of activityList) {
+            this.activityList.push(activity);
         }
-        this.monthsData[monthNum] = data;
     }
 
-    getMonthData(monthNum) {
-        if (monthNum < 0 || monthNum >= 12) {
-            throw `Month num has to be in range 0 to 11. Was: ${monthNum}`;
-        }
-        return this.monthsData[monthNum];
+    getActivities() {
+        return this.activityList;
+    }
+
+    getActivitiesInRange(startDate, endDate) {
+        let activitiesInMonth = this.activityList.filter((activity) => (activity.date > startDate && activity.date < endDate));
+        return activitiesInMonth.sort((activity1, activity2) => activity1.date - activity2.date);
+    }
+
+    getActivitiesForDate(date) {
+        //console.log(date, this.activityList);
+        return this.activityList.filter((activity) => (activity.date === Calendar.dateToString(date)));
+    }
+
+    setColor(color) {
+        this.color = color;
+    }
+
+    getColor() {
+        return this.color;
     }
 
     static daysInMonth(month) {
@@ -44,5 +51,9 @@ export default class Calendar {
     static monthName(monthNum) {
         let monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         return monthNames[monthNum];
+    }
+
+    static dateToString(date) {
+        return `${date.toISOString().substring(0, 10)}`;
     }
 }

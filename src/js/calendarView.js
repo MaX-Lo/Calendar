@@ -1,7 +1,7 @@
 import Calendar from "./calendar";
 
 export default class CalendarView {
-    constructor(width) {
+    constructor(width = 0) {
         this.width = width;
         this.textSize = 32;
     }
@@ -32,6 +32,10 @@ export default class CalendarView {
 
     getHeight() {
         return 2 * this.getMonthYOffset() + 2.5 * this.textSize;
+    }
+
+    setWidth(width) {
+        this.width = width;
     }
 
     getWidth() {
@@ -78,8 +82,8 @@ export default class CalendarView {
         let x = 0;
         let y = 50;
 
-        for (let i = 0; i < calendar.getData().length; i++) {
-            this.drawMonthLineWise(p, x, y, calendar.getMonthData(i));
+        for (let i = 0; i < 12; i++) {
+            this.drawMonthLineWise(p, x, y, calendar, i);
             x += this.getMonthXOffset();
             if (i % 6 === 5) {
                 x -= 6 * this.getMonthXOffset();
@@ -88,12 +92,14 @@ export default class CalendarView {
         }
     }
 
-    drawMonthLineWise(p, startX, startY, monthData) {
+    drawMonthLineWise(p, startX, startY, calendar, month) {
         let x = startX;
         let y = startY;
-        for (let i = 0; i < monthData.length; i++) {
-            if (monthData[i]) {
-                p.fill(200, 0, 0);
+        let year = new Date().getFullYear();
+        for (let i = 0; i < Calendar.daysInMonth(month); i++) {
+            let date = new Date(year, month, i + 2);
+            if (calendar.getActivitiesForDate(date).length > 0) {
+                p.fill(calendar.getColor()[0], calendar.getColor()[1], calendar.getColor()[2]);
             } else {
                 p.fill(230);
             }
