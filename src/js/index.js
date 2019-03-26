@@ -8,6 +8,7 @@ import {getCalendarCategories, getCalendarData} from "./dataRepository";
 let calendarView = new CalendarView();
 let calendars = [];
 let currentCalendarIndex = 0;
+let lastCalendarChange = new Date();
 
 document.addEventListener('DOMContentLoaded', function () {
     populateCalendar();
@@ -18,15 +19,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
 window.addEventListener('resize', () => calendarView.setWidth(getCalendarContainerWidth()));
 
-window.setInterval(switchCalendar, 2000);
+window.setInterval(switchCalendar, 5000);
 
 
 function switchCalendar() {
     currentCalendarIndex = (currentCalendarIndex + 1) % calendars.length;
+    lastCalendarChange = new Date();
     updateTitles();
 }
 
 function updateTitles() {
+    if (calendars.length === 0) {
+        return;
+    }
     setCenterTitle(calendars[currentCalendarIndex].name);
     if (calendars.length > 1) {
         let lastIndex = (currentCalendarIndex - 1 + calendars.length) % calendars.length;
@@ -48,7 +53,12 @@ function populateCalendar() {
 }
 
 function addCalendar(category) {
-    let calendar = new Calendar(category.name, category.color);
+    let calendar;
+    if (category.color === null || category.color === undefined) {
+        calendar = new Calendar(category.name);
+    } else {
+        calendar = new Calendar(category.name, category.color);
+    }
     calendars.push(calendar);
 }
 
@@ -71,7 +81,16 @@ function initCalendarView() {
         p.draw = () => {
             p.background(255);
             p.noStroke();
-            calendarView.draw(p, calendars[currentCalendarIndex]);
+            if (calendars.length > 0) {
+                if (calendars.length > 1) {
+                    let lastIndex = (currentCalendarIndex - 1 + calendars.length) % calendars.length;
+                    let transitionProgress = Math.min((new Date() - lastCalendarChange) / 1500, 1);
+                    // console.log(transitionProgress);
+                    calendarView.draw(p, calendars[currentCalendarIndex], calendars[lastIndex], transitionProgress)
+                } else {
+                    calendarView.draw(p, calendars[currentCalendarIndex]);
+                }
+            }
         };
         p.windowResized = () => {
             p.resizeCanvas(calendarView.getWidth(), calendarView.getHeight())
@@ -86,15 +105,22 @@ function getCalendarContainerWidth() {
 }
 
 function setLeftTitle(title) {
-    document.getElementById("leftTitle").innerHTML = title;
+    updateTitle(title, "#leftTitle");
 }
 
 function setCenterTitle(title) {
-    document.getElementById("centerTitle").innerHTML = title;
+    updateTitle(title, "#centerTitle");
 }
 
 function setRightTitle(title) {
-    document.getElementById("rightTitle").innerHTML = title;
+    updateTitle(title, "#rightTitle");
+}
+
+function updateTitle(title, elementId) {
+    let $title = $(elementId);
+    $title.fadeOut(1500);
+    setTimeout(() => $title.html(title), 1500);
+    $title.fadeIn(1500);
 }
 
 function updateDateElement() {

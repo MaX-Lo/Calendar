@@ -1,4 +1,4 @@
-import {fetchActivities, fetchCategories} from './networkHandler';
+import {fetchActivities, fetchCategories, dispatchActivity} from './networkHandler';
 import {getMockCategories, getMockCalendarData} from './mockData';
 
 const MOCK = true;
@@ -16,5 +16,13 @@ export function getCalendarData(category, callback) {
         callback(getMockCalendarData(category));
     } else {
         fetchActivities(category, callback)
+    }
+}
+
+export function addActivity(activity) {
+    if (MOCK) {
+        // Todo
+    } else {
+        dispatchActivity(activity)
     }
 }

@@ -3,6 +3,7 @@ import Calendar from "./calendar";
 export default class CalendarView {
     constructor(width = 0) {
         this.width = width;
+        this.transitionDuration = 1500;
     }
 
     getDaySize() {
@@ -45,10 +46,10 @@ export default class CalendarView {
         return this.width / 30;
     }
 
-    draw(p, calendar) {
+    draw(p, calendar, oldCalendar = calendar, transitionProgress = 1) {
         this.drawEmptyCells(p);
         this.drawCaptions(p);
-        this.drawContent(p, calendar);
+        this.drawContent(p, calendar, oldCalendar, transitionProgress);
     }
 
     drawEmptyCells(p) {
@@ -81,12 +82,12 @@ export default class CalendarView {
         }
     }
 
-    drawContent(p, calendar) {
+    drawContent(p, calendar, oldCalendar, transitionProgress) {
         let x = 0;
         let y = 50;
 
         for (let i = 0; i < 12; i++) {
-            this.drawMonthLineWise(p, x, y, calendar, i);
+            this.drawMonthLineWise(p, x, y, calendar, oldCalendar, transitionProgress, i);
             x += this.getMonthXOffset();
             if (i % 6 === 5) {
                 x -= 6 * this.getMonthXOffset();
@@ -95,17 +96,27 @@ export default class CalendarView {
         }
     }
 
-    drawMonthLineWise(p, startX, startY, calendar, month) {
+    drawMonthLineWise(p, startX, startY, calendar, oldCalendar, transitionProgress, month) {
         let x = startX;
         let y = startY;
         let year = new Date().getFullYear();
         for (let i = 0; i < Calendar.daysInMonth(month); i++) {
             let date = new Date(year, month, i + 2);
-            if (calendar.getActivitiesForDate(date).length > 0) {
-                p.fill(calendar.getColor()[0], calendar.getColor()[1], calendar.getColor()[2]);
-            } else {
-                p.fill(230);
+
+            let oldColor = [230, 230, 230];
+            let newColor = [230, 230, 230];
+            if (oldCalendar.getActivitiesForDate(date).length > 0) {
+                oldColor = oldCalendar.getColor();
             }
+            if (calendar.getActivitiesForDate(date).length > 0) {
+                newColor = calendar.getColor();
+            }
+            let color = [
+                        oldColor[0] * (1 - transitionProgress) + newColor[0] * transitionProgress,
+                        oldColor[1] * (1 - transitionProgress) + newColor[1] * transitionProgress,
+                        oldColor[2] * (1 - transitionProgress) + newColor[2] * transitionProgress,
+                    ];
+            p.fill(color);
             p.rect(x, y, this.getDaySize(), this.getDaySize());
 
             x += this.getDaySize() + this.getDayMargin();

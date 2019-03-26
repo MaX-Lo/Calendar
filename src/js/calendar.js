@@ -1,13 +1,5 @@
 export default class Calendar {
-    get name() {
-        return this._name;
-    }
-
-    set name(value) {
-        this._name = value;
-    }
-
-    constructor(name = 'unknown name',color = [0, 170, 200], activityList = []) {
+    constructor(name = 'unknown name', color = [0, 30, 70], activityList = []) {
         this.color = color;
         this.activityList = activityList;
         this.setActivities(activityList)
@@ -41,6 +33,14 @@ export default class Calendar {
 
     getColor() {
         return this.color;
+    }
+
+    get name() {
+        return this._name;
+    }
+
+    set name(value) {
+        this._name = value;
     }
 
     static daysInMonth(month) {
