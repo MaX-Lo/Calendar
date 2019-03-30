@@ -2,7 +2,7 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Calendar from './calendar';
-import CalendarView from './calendarView';
+import CalendarView from './calendarViewPortrait';
 import {getCalendarCategories, getCalendarData} from "./dataRepository";
 
 let calendarView = new CalendarView();
