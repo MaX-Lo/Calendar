@@ -3,12 +3,17 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const webpack = require('webpack');
 
+
 module.exports = {
     mode: 'development',
-    entry: './src/js/index.js',
+    entry: {
+        main: './src/js/index.js',
+        input: './src/js/input/input.js'
+    },
     output: {
-        filename: 'app.bundle.js',
-        path: path.resolve(__dirname, 'dist')
+        filename: '[name].bundle.js',
+        // path to backend, allows Spring to deliver the bundle
+        path: '/Users/max/Projects/IntelliJProjects/calendar/public' //path.resolve(__dirname, 'dist')
     },
     externals: {
         p5: 'p5'
@@ -24,10 +29,22 @@ module.exports = {
             hash: true,
             title: 'Calendar',
             template: './src/index.html',
+            chunks: ['main'],
             filename: './index.html'
         }),
+        new HtmlWebpackPlugin({
+            hash: true,
+            title: 'Add Activities',
+            template: 'src/input.html',
+            chunks: ['input'],
+            filename: './input.html'
+        }),
         new CleanWebpackPlugin(),
-        new webpack.HotModuleReplacementPlugin()
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.ProvidePlugin({
+            $: "jquery",
+            jQuery: "jquery"
+        })
     ],
     module: {
         rules: [

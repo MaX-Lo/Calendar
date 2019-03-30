@@ -1,7 +1,7 @@
-import {fetchActivities, fetchCategories} from './networkHandler';
+import {fetchActivities, fetchCategories, dispatchActivity} from './networkHandler';
 import {getMockCategories, getMockCalendarData} from './mockData';
 
-const MOCK = true;
+const MOCK = false;
 
 export function getCalendarCategories(callback) {
     if (MOCK) {
@@ -16,5 +16,13 @@ export function getCalendarData(category, callback) {
         callback(getMockCalendarData(category));
     } else {
         fetchActivities(category, callback)
+    }
+}
+
+export function addActivity(activity) {
+    if (MOCK) {
+        console.log("not added since MOCK is on")
+    } else {
+        dispatchActivity(activity)
     }
 }

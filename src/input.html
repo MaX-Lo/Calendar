@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title><%= htmlWebpackPlugin.options.title %></title>
+</head>
+<body>
+<section class="p-3">
+    <div class="m-2">
+        <h3 class="text-primary">Add Activity</h3>
+    </div>
+
+    <div class="form-group m-2 mt-4">
+        <label class="text-secondary" for="categoriesSelect">Catttegory</label>
+        <select class="form-control" id="categoriesSelect">
+        </select>
+    </div>
+
+    <div class="text-secondary ml-2 mr-2 mt-4 mb-0">Date</div>
+    <div class="m-2 d-flex justify-content-center">
+        <div id="datePicker"></div>
+            <input type="hidden" id="datePickerInput">
+    </div>
+
+    <div class="m-2 mt-0">
+        <button id="addButton" type="button" class="btn btn-primary w-100">Add</button>
+    </div>
+</section>
+
+</body>
+</html>
