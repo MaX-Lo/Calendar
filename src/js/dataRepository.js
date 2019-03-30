@@ -1,7 +1,7 @@
 import {fetchActivities, fetchCategories, dispatchActivity} from './networkHandler';
 import {getMockCategories, getMockCalendarData} from './mockData';
 
-const MOCK = true;
+const MOCK = false;
 
 export function getCalendarCategories(callback) {
     if (MOCK) {
@@ -21,7 +21,7 @@ export function getCalendarData(category, callback) {
 
 export function addActivity(activity) {
     if (MOCK) {
-        // Todo
+        console.log("not added since MOCK is on")
     } else {
         dispatchActivity(activity)
     }

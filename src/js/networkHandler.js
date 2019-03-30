@@ -45,5 +45,6 @@ export function dispatchActivity(activity) {
         }
     };
     request.setRequestHeader("Content-Type", "application/json");
+    console.log(activity);
     request.send(JSON.stringify(activity));
 }

@@ -46,4 +46,8 @@ function initDatePicker() {
             $datePicker.datepicker('getFormattedDate')
         );
     });
+
+    $('#datePickerInput').val(
+        $datePicker.datepicker('getFormattedDate')
+    );
 }
