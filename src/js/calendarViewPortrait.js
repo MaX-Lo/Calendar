@@ -1,16 +1,17 @@
 import Calendar from "./calendar";
+import CalendarView from "./calendarView";
 
-export default class CalendarViewPortrait {
+export default class CalendarViewPortrait extends CalendarView {
     constructor(width = 0) {
-        this.width = width;
+        super(width);
     }
 
     getDaySize() {
-        // width = 3*6*day_size + 2*5*day_margin + 5 * month_margin
-        // width = 3*6*day_size + 2*5*(day_size/10) + 5 * (day_size/2)
-        // width = day_size * (18 + 1 + 2.5)
-        // day_size = width / 21.5
-        return this.width / 21.5
+        // _width = 3*6*day_size + 2*5*day_margin + 5 * month_margin
+        // _width = 3*6*day_size + 2*5*(day_size/10) + 5 * (day_size/2)
+        // _width = day_size * (18 + 1 + 2.5)
+        // day_size = _width / 21.5
+        return this._width / 21.5
     }
 
     getDayMargin() {
@@ -29,40 +30,17 @@ export default class CalendarViewPortrait {
         return 11 * this.getDaySize() + 10 * this.getDayMargin() + this.getMonthMargin();
     }
 
-    getHeight() {
+    get height() {
         return 2 * this.getMonthYOffset() + 2.5 * this.getTextSize();
     }
 
-    setWidth(width) {
-        this.width = width;
-    }
-
-    getWidth() {
-        return this.width;
-    }
-
     getTextSize() {
-        return this.width / 30;
+        return this._width / 30;
     }
 
-    draw(p, calendar) {
-        this.drawEmptyCells(p);
+    draw(p, calendar, oldCalendar = calendar, transitionProgress = 1) {
         this.drawCaptions(p);
-        this.drawContent(p, calendar);
-    }
-
-    drawEmptyCells(p) {
-        let x = 0;
-        let y = 50;
-        for (let i = 0; i < 12; i++) {
-            let data = Array(Calendar.daysInMonth(i)).fill(false);
-            this.drawMonthLineWise(p, x, y, data);
-            x += this.getMonthXOffset();
-            if (i % 6 === 5) {
-                x -= 6 * this.getMonthXOffset();
-                y += this.getMonthYOffset();
-            }
-        }
+        this.drawContent(p, calendar, oldCalendar, transitionProgress);
     }
 
     drawCaptions(p) {
@@ -81,12 +59,12 @@ export default class CalendarViewPortrait {
         }
     }
 
-    drawContent(p, calendar) {
+    drawContent(p, calendar, oldCalendar, transitionProgress) {
         let x = 0;
         let y = 50;
 
         for (let i = 0; i < 12; i++) {
-            this.drawMonthLineWise(p, x, y, calendar, i);
+            this.drawMonthLineWise(p, x, y, calendar, oldCalendar, transitionProgress, i);
             x += this.getMonthXOffset();
             if (i % 6 === 5) {
                 x -= 6 * this.getMonthXOffset();
@@ -95,17 +73,27 @@ export default class CalendarViewPortrait {
         }
     }
 
-    drawMonthLineWise(p, startX, startY, calendar, month) {
+    drawMonthLineWise(p, startX, startY, calendar, oldCalendar, transitionProgress, month) {
         let x = startX;
         let y = startY;
         let year = new Date().getFullYear();
         for (let i = 0; i < Calendar.daysInMonth(month); i++) {
             let date = new Date(year, month, i + 2);
-            if (calendar.getActivitiesForDate(date).length > 0) {
-                p.fill(calendar.getColor()[0], calendar.getColor()[1], calendar.getColor()[2]);
-            } else {
-                p.fill(230);
+
+            let oldColor = [230, 230, 230];
+            let newColor = [230, 230, 230];
+            if (oldCalendar.getActivitiesForDate(date).length > 0) {
+                oldColor = oldCalendar.getColor();
             }
+            if (calendar.getActivitiesForDate(date).length > 0) {
+                newColor = calendar.getColor();
+            }
+            let color = [
+                oldColor[0] * (1 - transitionProgress) + newColor[0] * transitionProgress,
+                oldColor[1] * (1 - transitionProgress) + newColor[1] * transitionProgress,
+                oldColor[2] * (1 - transitionProgress) + newColor[2] * transitionProgress,
+            ];
+            p.fill(color);
             p.rect(x, y, this.getDaySize(), this.getDaySize());
 
             x += this.getDaySize() + this.getDayMargin();

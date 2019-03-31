@@ -2,128 +2,23 @@ import Calendar from "./calendar";
 
 export default class CalendarView {
     constructor(width = 0) {
-        this.width = width;
-        this.transitionDuration = 1500;
+        this._width = width;
     }
 
-    getDaySize() {
-        // width = 3*6*day_size + 2*5*day_margin + 5 * month_margin
-        // width = 3*6*day_size + 2*5*(day_size/10) + 5 * (day_size/2)
-        // width = day_size * (18 + 1 + 2.5)
-        // day_size = width / 21.5
-        return this.width / 21.5
+    set width(width) {
+        if (width < 0) throw new Error("Can't set width to a negative value!");
+        this._width = width;
     }
 
-    getDayMargin() {
-        return this.getDaySize() / 10;
+    get width() {
+        return this._width;
     }
 
-    getMonthMargin() {
-        return this.getDaySize() / 2;
-    }
-
-    getMonthXOffset() {
-        return 3 * this.getDaySize() + 2 * this.getDayMargin() + this.getMonthMargin();
-    }
-
-    getMonthYOffset() {
-        return 11 * this.getDaySize() + 10 * this.getDayMargin() + this.getMonthMargin();
-    }
-
-    getHeight() {
-        return 2 * this.getMonthYOffset() + 2.5 * this.getTextSize();
-    }
-
-    setWidth(width) {
-        this.width = width;
-    }
-
-    getWidth() {
-        return this.width;
-    }
-
-    getTextSize() {
-        return this.width / 30;
+    get height() {
+        throw new Error("Method get height() not implemented!");
     }
 
     draw(p, calendar, oldCalendar = calendar, transitionProgress = 1) {
-        this.drawEmptyCells(p);
-        this.drawCaptions(p);
-        this.drawContent(p, calendar, oldCalendar, transitionProgress);
-    }
-
-    drawEmptyCells(p) {
-        let x = 0;
-        let y = 50;
-        for (let i = 0; i < 12; i++) {
-            let data = Array(Calendar.daysInMonth(i)).fill(false);
-            this.drawMonthLineWise(p, x, y, data);
-            x += this.getMonthXOffset();
-            if (i % 6 === 5) {
-                x -= 6 * this.getMonthXOffset();
-                y += this.getMonthYOffset();
-            }
-        }
-    }
-
-    drawCaptions(p) {
-        let x = 0;
-        let y = 32;
-        p.textSize(this.getTextSize());
-        p.fill(75);
-        for (let i = 0; i < 12; i++) {
-            let caption = Calendar.monthName(i);
-            p.text(caption, x, y);
-            x += this.getMonthXOffset();
-            if (i % 6 === 5) {
-                x -= 6 * this.getMonthXOffset();
-                y += 2 * this.getMonthYOffset() + this.getTextSize();
-            }
-        }
-    }
-
-    drawContent(p, calendar, oldCalendar, transitionProgress) {
-        let x = 0;
-        let y = 50;
-
-        for (let i = 0; i < 12; i++) {
-            this.drawMonthLineWise(p, x, y, calendar, oldCalendar, transitionProgress, i);
-            x += this.getMonthXOffset();
-            if (i % 6 === 5) {
-                x -= 6 * this.getMonthXOffset();
-                y += this.getMonthYOffset();
-            }
-        }
-    }
-
-    drawMonthLineWise(p, startX, startY, calendar, oldCalendar, transitionProgress, month) {
-        let x = startX;
-        let y = startY;
-        let year = new Date().getFullYear();
-        for (let i = 0; i < Calendar.daysInMonth(month); i++) {
-            let date = new Date(year, month, i + 2);
-
-            let oldColor = [230, 230, 230];
-            let newColor = [230, 230, 230];
-            if (oldCalendar.getActivitiesForDate(date).length > 0) {
-                oldColor = oldCalendar.getColor();
-            }
-            if (calendar.getActivitiesForDate(date).length > 0) {
-                newColor = calendar.getColor();
-            }
-            let color = [
-                        oldColor[0] * (1 - transitionProgress) + newColor[0] * transitionProgress,
-                        oldColor[1] * (1 - transitionProgress) + newColor[1] * transitionProgress,
-                        oldColor[2] * (1 - transitionProgress) + newColor[2] * transitionProgress,
-                    ];
-            p.fill(color);
-            p.rect(x, y, this.getDaySize(), this.getDaySize());
-
-            x += this.getDaySize() + this.getDayMargin();
-            if (i % 3 === 2) {
-                x -= (this.getDaySize() + this.getDayMargin()) * 3;
-                y += this.getDaySize() + this.getDayMargin();
-            }
-        }
+        throw new Error("Method draw() not implemented!")
     }
 }

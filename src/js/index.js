@@ -2,7 +2,7 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Calendar from './calendar';
-import CalendarView from './calendarViewPortrait';
+import CalendarView from './calendarViewLandscape';
 import {getCalendarCategories, getCalendarData} from "./dataRepository";
 
 let calendarView = new CalendarView();
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updateDateElement();
 });
 
-window.addEventListener('resize', () => calendarView.setWidth(getCalendarContainerWidth()));
+window.addEventListener('resize', () => calendarView.width = getCalendarContainerWidth());
 
 window.setInterval(switchCalendar, 5000);
 
@@ -72,11 +72,11 @@ function addActivities(categoryName, activities) {
 }
 
 function initCalendarView() {
-    calendarView.setWidth(getCalendarContainerWidth());
+    calendarView.width = getCalendarContainerWidth();
 
     let sketch = (p) => {
         p.setup = () => {
-            p.createCanvas(calendarView.getWidth(), calendarView.getHeight());
+            p.createCanvas(calendarView.width, calendarView.height);
         };
         p.draw = () => {
             p.background(255);
@@ -93,7 +93,7 @@ function initCalendarView() {
             }
         };
         p.windowResized = () => {
-            p.resizeCanvas(calendarView.getWidth(), calendarView.getHeight())
+            p.resizeCanvas(calendarView.width, calendarView.height)
         }
     };
 
