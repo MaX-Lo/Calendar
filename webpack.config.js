@@ -22,7 +22,11 @@ module.exports = {
     devServer: {
         contentBase: './dist',
         hot: true,
-        port: 8081
+        port: 8081,
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': '*',
+        },
     },
     plugins: [
         new HtmlWebpackPlugin({

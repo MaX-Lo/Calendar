@@ -1,7 +1,7 @@
 import {fetchActivities, fetchCategories, dispatchActivity} from './networkHandler';
 import {getMockCategories, getMockCalendarData} from './mockData';
 
-const MOCK = true;
+const MOCK = false;
 
 export function getCalendarCategories(callback) {
     if (MOCK) {
