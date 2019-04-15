@@ -39,6 +39,13 @@ let legendElementWidth = gridSize*2;
 let buckets = 9;
 let colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"]; // alternatively colorbrewer.YlGnBu[9]
 let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+let monthLengths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+let mockDaysData = []
+for (let i = 0; i < 12; i++) {
+    let monthData = Array.from({length: monthLengths[i]}, () => Math.random() > 0.5);
+    mockDaysData.push(monthData);
+}
+let daysData = mockDaysData;
 let datasets = ["data.tsv", "data2.tsv"];
 
 let svg = d3.select("#chart").append("svg")
@@ -54,16 +61,24 @@ let monthLabels = svg.selectAll(".monthLabel")
     .attr("x", function (d, i) { return (i % 6) * monthXOffset; })
     .attr("y", function (d, i) { return Math.floor(i / 6) * monthYOffset; })
     .style("text-anchor", "start");
-    // .attr("transform", "translate(-6," + gridSize / 1.5 + ")")
-    // .attr("class", function (d, i) { return ((i >= 0 && i <= 4) ? "dayLabel mono axis axis-workweek" : "dayLabel mono axis"); });
 
-let activityChart = svg.selectAll(".dayRect")
-    .data([false, false, true, true, false, true, false, false, true, true, true, true, true])
+let monthArea = svg.selectAll(".monthRect")
+    .data(daysData)
+    .enter().append("g") // g elements are used in svg to group elements
+    .attr("transform", function (d, i) {
+        return 'translate(' + (i % 6) * monthXOffset + ','
+            + (textSize/2 + Math.floor(i/6) * (monthYOffset)) + ')'; })
+    .selectAll(".dayRect")
+    .data(function(d, i) { return d; }) // d is daysData[i]
     .enter().append("rect")
     .attr("x", function (d, i) { return (i % 7) * (daySize + dayMargin); })
     .attr("y", function (d, i) { return Math.floor(i/7) * (daySize + dayMargin); })
     .attr("width", daySize)
     .attr("height", daySize)
+    // .style("fill", "#ffffff")
+    // .transition()
+    // .attr("delay", 2000)
+    // .attr("duration", 2000)
     .style("fill", function (d, i) { return d ? "#8dff81" : "#ff8d81"; });
 
 var heatmapChart = function(tsvFile) {
