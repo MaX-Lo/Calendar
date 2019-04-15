@@ -5,6 +5,8 @@ import 'bootstrap-datepicker/dist/css/bootstrap-datepicker.standalone.min.css'
 
 import {getCalendarCategories, addActivity} from "../dataRepository";
 
+initResponseNotification();
+
 document.addEventListener('DOMContentLoaded', function () {
     initDatePicker();
     populateDropdown();
@@ -33,7 +35,7 @@ function handleAddActivityButtonClick() {
     let date = datePickerInput.value;
 
     let activity = {category: category, date: date};
-    addActivity(activity)
+    addActivity(activity, onAddActivityResponse)
 }
 
 function initDatePicker() {
@@ -51,3 +53,34 @@ function initDatePicker() {
         $datePicker.datepicker('getFormattedDate')
     );
 }
+
+function initResponseNotification() {
+    hideNotificationMessage()
+}
+
+function onAddActivityResponse(responseStatus) {
+    if (responseStatus === 201) {
+        showSuccessNotificationMessage("Added Activity!");
+    } else {
+        showErrorNotificationMessage(`Error adding activity! Response Status: ${responseStatus}`)
+    }
+}
+
+function hideNotificationMessage() {
+    $('#notificationMessageSuccess').hide(0);
+    $('#notificationMessageError').hide(0);
+
+}
+ eSuccess'), message);
+}
+
+function showErrorNotificationMessage(message) {
+    showMessage($('#notificationMessageError'), message);
+}
+
+function showMessage(messageElement, message) {
+    messageElement.html(message);
+    messageElement.show();
+    setTimeout(() => messageElement.hide(), 5000);
+}
+

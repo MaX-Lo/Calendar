@@ -19,10 +19,10 @@ export function getCalendarData(category, callback) {
     }
 }
 
-export function addActivity(activity) {
+export function addActivity(activity, callback) {
     if (MOCK) {
         console.log("not added since MOCK is on")
     } else {
-        dispatchActivity(activity)
+        dispatchActivity(activity, callback)
     }
 }

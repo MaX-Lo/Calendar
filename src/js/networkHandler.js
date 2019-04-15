@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = 'http://192.168.0.101:8080';
 
 export function fetchActivities(category, callback) {
     let endpoint = BASE_URL + `/activities/search/findByCategory?category=${category}`;
@@ -32,17 +32,19 @@ export function fetchCategories(callback) {
     request.send();
 }
 
-export function dispatchActivity(activity) {
+export function dispatchActivity(activity, callback) {
     let endpoint = BASE_URL + `/activities`;
     let request = new XMLHttpRequest();
     request.open('POST', endpoint, true);
     request.onload = function() {
 
         if (request.status >= 200 && request.status < 400) {
-            console.log('added activity!')
+            console.log('Added activity!');
         } else {
-            console.log('error adding activity!');
+            console.log('Error adding activity!');
         }
+
+        callback(request.status);
     };
     request.setRequestHeader("Content-Type", "application/json");
     console.log(activity);
