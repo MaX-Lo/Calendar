@@ -71,8 +71,6 @@ function hideNotificationMessage() {
     $('#notificationMessageError').hide(0);
 
 }
- eSuccess'), message);
-}
 
 function showErrorNotificationMessage(message) {
     showMessage($('#notificationMessageError'), message);

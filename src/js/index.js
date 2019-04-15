@@ -1,5 +1,8 @@
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import * as d3 from 'd3'
+
+import '../css/styles.css'
 
 import Calendar from './calendar';
 import CalendarView from './calendarViewLandscape';
@@ -21,6 +24,121 @@ window.addEventListener('resize', () => calendarView.width = getCalendarContaine
 
 window.setInterval(switchCalendar, 5000);
 
+let margin = { top: 50, right: 30, bottom: 100, left: 30 };
+let width = 960 - margin.left - margin.right;
+let daySize = width / 48.1;
+let dayMargin = daySize / 10;
+let monthMargin = daySize / 2;
+let textSize = width / 60;
+let monthYOffset = 5 * daySize + 4 * dayMargin + monthMargin + textSize;
+let monthXOffset = 7 * daySize + 6 * dayMargin + monthMargin;
+// let height = 430 - margin.top - margin.bottom;
+let height = monthYOffset + 2 * textSize;
+let gridSize = Math.floor(width / 24);
+let legendElementWidth = gridSize*2;
+let buckets = 9;
+let colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"]; // alternatively colorbrewer.YlGnBu[9]
+let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+let datasets = ["data.tsv", "data2.tsv"];
+
+let svg = d3.select("#chart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+let monthLabels = svg.selectAll(".monthLabel")
+    .data(months)
+    .enter().append("text")
+    .text(function (d) { return d;})
+    .attr("x", function (d, i) { return (i % 6) * monthXOffset; })
+    .attr("y", function (d, i) { return Math.floor(i / 6) * monthYOffset; })
+    .style("text-anchor", "start");
+    // .attr("transform", "translate(-6," + gridSize / 1.5 + ")")
+    // .attr("class", function (d, i) { return ((i >= 0 && i <= 4) ? "dayLabel mono axis axis-workweek" : "dayLabel mono axis"); });
+
+let activityChart = svg.selectAll(".dayRect")
+    .data([false, false, true, true, false, true, false, false, true, true, true, true, true])
+    .enter().append("rect")
+    .attr("x", function (d, i) { return (i % 7) * (daySize + dayMargin); })
+    .attr("y", function (d, i) { return Math.floor(i/7) * (daySize + dayMargin); })
+    .attr("width", daySize)
+    .attr("height", daySize)
+    .style("fill", function (d, i) { return d ? "#8dff81" : "#ff8d81"; });
+
+var heatmapChart = function(tsvFile) {
+    d3.tsv(tsvFile,
+        function(d) {
+            return {
+                day: +d.day,
+                hour: +d.hour,
+                value: +d.value
+            };
+        },
+        function(error, data) {
+            var colorScale = d3.scale.quantile()
+                .domain([0, buckets - 1, d3.max(data, function (d) { return d.value; })])
+                .range(colors);
+
+            var cards = svg.selectAll(".hour")
+                .data(data, function(d) {return d.day+':'+d.hour;});
+
+            cards.append("title");
+
+            cards.enter().append("rect")
+                .attr("x", function(d) { return (d.hour - 1) * gridSize; })
+                .attr("y", function(d) { return (d.day - 1) * gridSize; })
+                .attr("rx", 4)
+                .attr("ry", 4)
+                .attr("class", "hour bordered")
+                .attr("width", gridSize)
+                .attr("height", gridSize)
+                .style("fill", colors[0]);
+
+            cards.transition().duration(1000)
+                .style("fill", function(d) { return colorScale(d.value); });
+
+            cards.select("title").text(function(d) { return d.value; });
+
+            cards.exit().remove();
+
+            var legend = svg.selectAll(".legend")
+                .data([0].concat(colorScale.quantiles()), function(d) { return d; });
+
+            legend.enter().append("g")
+                .attr("class", "legend");
+
+            legend.append("rect")
+                .attr("x", function(d, i) { return legendElementWidth * i; })
+                .attr("y", height)
+                .attr("width", legendElementWidth)
+                .attr("height", gridSize / 2)
+                .style("fill", function(d, i) { return colors[i]; });
+
+            legend.append("text")
+                .attr("class", "mono")
+                .text(function(d) { return "≥ " + Math.round(d); })
+                .attr("x", function(d, i) { return legendElementWidth * i; })
+                .attr("y", height + gridSize);
+
+            legend.exit().remove();
+
+        });
+};
+
+heatmapChart(datasets[0]);
+
+var datasetpicker = d3.select("#dataset-picker").selectAll(".dataset-button")
+    .data(datasets);
+
+datasetpicker.enter()
+    .append("input")
+    .attr("value", function(d){ return "Dataset " + d })
+    .attr("type", "button")
+    .attr("class", "dataset-button")
+    .on("click", function(d) {
+        heatmapChart(d);
+    });
 
 function switchCalendar() {
     currentCalendarIndex = (currentCalendarIndex + 1) % calendars.length;
