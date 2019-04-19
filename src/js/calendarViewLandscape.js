@@ -31,7 +31,7 @@ export default class CalendarViewLandscape extends CalendarView {
     }
 
     getMonthYOffset() {
-        return 5*this.getDaySize() + 4*this.getDayMargin() + this.getMonthMargin() + this.getTextSize();
+        return 5*this.getDaySize() + 4*this.getDayMargin() + this.getMonthMargin() + 1.5 * this.getTextSize();
     }
 
     getMonthXOffset() {
@@ -50,7 +50,8 @@ export default class CalendarViewLandscape extends CalendarView {
             .text(function (d) { return d;})
             .attr("x", function (d, i) { return (i % 6) * calView.getMonthXOffset(); })
             .attr("y", function (d, i) { return calView.getTextSize() + Math.floor(i / 6) * calView.getMonthYOffset(); })
-            .style("text-anchor", "start");
+            .style("text-anchor", "start")
+            .style("fill", "#222222");
     }
 
     drawCalendarContent(svg, data) {
@@ -70,14 +71,23 @@ export default class CalendarViewLandscape extends CalendarView {
             .attr("height", calView.getDaySize())
             .style("fill", "#ffffff")
             .transition().duration(1000)
-            .style("fill", function (d, i) { return d ? "#8dff81" : "#eeeeee"; });
+            .style("fill", function (d, i) { return d ? "#007bff" : "#eeeeee"; });
     }
 
-    getColor(oldColor, newColor, transitionProgress) {
-        return [
-            oldColor[0] * (1 - transitionProgress) + newColor[0] * transitionProgress,
-            oldColor[1] * (1 - transitionProgress) + newColor[1] * transitionProgress,
-            oldColor[2] * (1 - transitionProgress) + newColor[2] * transitionProgress,
-        ];
+    highlightCurrentDay(svg, date) {
+        let month = date.getMonth();
+        let day = date.getDate() - 1;
+        console.log(`day ${day} month ${month}`);
+        let x = (month % 6) * this.getMonthXOffset() +
+            (day % 7) * (this.getDaySize() + this.getDayMargin());
+        let y = 3/2 * this.getTextSize() + Math.floor(month / 6) * this.getMonthYOffset() +
+            Math.floor(day/7) * (this.getDaySize() + this.getDayMargin());
+        svg.selectAll(".monthLabel").data([1]).join("rect")
+            .attr("x", x)
+            .attr("y", y)
+            .attr("width", this.getDaySize())
+            .attr("height", this.getDaySize())
+            .style("fill-opacity", 0)
+            .style("stroke", "#ff1111") ;
     }
 }

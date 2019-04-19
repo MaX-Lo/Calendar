@@ -9,16 +9,10 @@ import CalendarView from './calendarViewLandscape';
 import {getCalendarCategories, getCalendarData} from "./dataRepository";
 
 let calView = new CalendarView();
+calView.width = getCalendarContainerWidth();
+
 let calendars = [];
 let currentCalendarIndex = 0;
-
-document.addEventListener('DOMContentLoaded', function () {
-    populateCalendars();
-    updateTitles();
-    updateDateElement();
-});
-
-calView.width = getCalendarContainerWidth();
 
 let svg = d3.select("#calendarContainer").append("svg")
     .attr("width", calView.width)
@@ -26,19 +20,35 @@ let svg = d3.select("#calendarContainer").append("svg")
     .append("g");
 
 
+document.addEventListener('DOMContentLoaded', function () {
+    populateCalendars();
+    updateDateElement();
+});
+
+let nextCalendarButton = document.getElementById('nextCalendarBtn');
+nextCalendarButton.addEventListener('click', () => onNextCalendarBtnClickHandler());
+let prevCalendarButton = document.getElementById('prevCalendarBtn');
+prevCalendarButton.addEventListener('click', () => onPrevCalendarBtnClickHandler());
+
+
 function updateCalendarView() {
-    let calendar = calendars[0];
-    for (let i=0; i < calendars.length; i++) {
-        if (calendars[i].name === "Climbing") {
-            calendar = calendars[i];
-            break;
-        }
-    }
-    if (!calendar)
-        return;
+    if (calendars.length === 0) { return; }
+    let calendar = calendars[currentCalendarIndex];
+    if (!calendar) { return; }
     calView.drawMonthLabels(svg);
     calView.drawCalendarContent(svg, calendar.toBoolArray());
-    updateTitle(calendar.name, "#calendarTitle");
+    calView.highlightCurrentDay(svg, new Date());
+    updateTitle(calendar.name + " Days");
+}
+
+function onNextCalendarBtnClickHandler() {
+    currentCalendarIndex = (currentCalendarIndex + 1) % calendars.length;
+    updateCalendarView();
+}
+
+function onPrevCalendarBtnClickHandler() {
+    currentCalendarIndex = (currentCalendarIndex - 1 + calendars.length) % calendars.length;
+    updateCalendarView();
 }
 
 function populateCalendars() {
@@ -47,10 +57,9 @@ function populateCalendars() {
             addCalendar(category);
             getCalendarData(category.name, (activities) => {
                 addActivities(category.name, activities);
-                console.log(category.name);
-                if (category.name === "Climbing") {
-                    updateCalendarView()
-                }
+                // calendar view should only be updated after data for the first calendar is received
+                if (calendars.length !== 0 && calendars[0].name === category.name) {
+                    updateCalendarView(); }
             });
         }
     });
@@ -79,37 +88,10 @@ function getCalendarContainerWidth() {
     return document.getElementById('calendarContainer').offsetWidth;
 }
 
-function updateTitles() {
-    if (calendars.length === 0) {
-        return;
-    }
-    setCenterTitle(calendars[currentCalendarIndex].name);
-    if (calendars.length > 1) {
-        let lastIndex = (currentCalendarIndex - 1 + calendars.length) % calendars.length;
-        setLeftTitle(calendars[lastIndex].name);
-    }
-    if (calendars.length > 2) {
-        let nextIndex = (currentCalendarIndex + 1) % calendars.length;
-        setRightTitle(calendars[nextIndex].name);
-    }
-}
-
-function setLeftTitle(title) {
-    updateTitle(title, "#leftTitle");
-}
-
-function setCenterTitle(title) {
-    updateTitle(title, "#centerTitle");
-}
-
-function setRightTitle(title) {
-    updateTitle(title, "#rightTitle");
-}
-
-function updateTitle(title, elementId) {
-    let $title = $(elementId);
+function updateTitle(title) {
+    let $title = $("#calendarTitle");
     $title.fadeOut(500);
-    setTimeout(() => $title.html(title), 1500);
+    setTimeout(() => $title.html(title), 500);
     $title.fadeIn(500);
 }
 

@@ -3,7 +3,7 @@ import 'bootstrap-datepicker'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-datepicker/dist/css/bootstrap-datepicker.standalone.min.css'
 
-import {getCalendarCategories, addActivity} from "../dataRepository";
+import {getCalendarCategories, addActivity, addCategory} from "../dataRepository";
 
 initResponseNotification();
 
@@ -12,8 +12,10 @@ document.addEventListener('DOMContentLoaded', function () {
     populateDropdown();
 });
 
-let addActivityButton = document.getElementById('addButton');
-addActivityButton.addEventListener('click', () => handleAddActivityButtonClick());
+let addActivityButton = document.getElementById('addActivityBtn');
+addActivityButton.addEventListener('click', () => onAddActivityButtonClickHandler());
+let addCategoryButton = document.getElementById('addCategoryBtn');
+addCategoryButton.addEventListener('click', () => onAddCategoryButtonClickHandler());
 
 function populateDropdown() {
     getCalendarCategories((categories) => setDropdownData(categories));
@@ -28,14 +30,8 @@ function setDropdownData(categories) {
     });
 }
 
-function handleAddActivityButtonClick() {
-    let categoriesSelect = document.getElementById("categoriesSelect");
-    let category = categoriesSelect.options[categoriesSelect.selectedIndex].value;
-    let datePickerInput = document.getElementById("datePickerInput");
-    let date = datePickerInput.value;
-
-    let activity = {category: category, date: date};
-    addActivity(activity, onAddActivityResponse)
+function initResponseNotification() {
+    hideNotificationMessage()
 }
 
 function initDatePicker() {
@@ -54,8 +50,14 @@ function initDatePicker() {
     );
 }
 
-function initResponseNotification() {
-    hideNotificationMessage()
+function onAddActivityButtonClickHandler() {
+    let categoriesSelect = document.getElementById("categoriesSelect");
+    let category = categoriesSelect.options[categoriesSelect.selectedIndex].value;
+    let datePickerInput = document.getElementById("datePickerInput");
+    let date = datePickerInput.value;
+
+    let activity = {category: category, date: date};
+    addActivity(activity, onAddActivityResponse)
 }
 
 function onAddActivityResponse(responseStatus) {
@@ -66,19 +68,36 @@ function onAddActivityResponse(responseStatus) {
     }
 }
 
+function onAddCategoryButtonClickHandler() {
+    let categoryNameInput = document.getElementById("categoryName");
+    let categoryDescriptionInput = document.getElementById("categoryDescription");
+    let category = {name: categoryNameInput.value, description: categoryDescriptionInput.value};
+    addCategory(category, onAddCategoryResponse);
+}
+
+function onAddCategoryResponse(responseStatus) {
+    if (responseStatus === 201) {
+        showSuccessNotificationMessage("Added Category!");
+    } else {
+        showErrorNotificationMessage(`Error adding Category! Response Status: ${responseStatus}`)
+    }
+}
+
 function hideNotificationMessage() {
     $('#notificationMessageSuccess').hide(0);
     $('#notificationMessageError').hide(0);
-
 }
 
 function showErrorNotificationMessage(message) {
     showMessage($('#notificationMessageError'), message);
 }
 
+function showSuccessNotificationMessage(message) {
+    showMessage($('#notificationMessageSuccess'), message);
+}
+
 function showMessage(messageElement, message) {
     messageElement.html(message);
     messageElement.show();
-    setTimeout(() => messageElement.hide(), 5000);
+    setTimeout(() => messageElement.hide(), 4000);
 }
-
