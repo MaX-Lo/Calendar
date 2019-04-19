@@ -38,71 +38,39 @@ export default class CalendarViewLandscape extends CalendarView {
         return 7*this.getDaySize() + 6*this.getDayMargin() + this.getMonthMargin();
     }
 
-    draw(p, calendar, oldCalendar = calendar, transitionProgress = 1) {
-        this.drawCaptions(p);
-        this.drawContent(p, calendar, oldCalendar, transitionProgress);
-    }
-
     getTextSize() {
         return this._width / 60;
     }
 
-    drawCaptions(p) {
-        let x = 0;
-        let y = this.getTextSize();
-        p.textSize(this.getTextSize());
-        p.fill(75);
-        for (let i = 0; i < 12; i++) {
-            let caption = Calendar.monthName(i);
-            p.text(caption, x, y);
-            x += this.getMonthXOffset();
-            if (i % 6 === 5) {
-                x -= 6 * this.getMonthXOffset();
-                y += this.getMonthYOffset() + this.getTextSize();
-            }
-        }
+    drawMonthLabels(svg) {
+        let calView = this;
+        let monthLabels = svg.selectAll(".monthLabel")
+            .data(Calendar.monthNames())
+            .enter().append("text")
+            .text(function (d) { return d;})
+            .attr("x", function (d, i) { return (i % 6) * calView.getMonthXOffset(); })
+            .attr("y", function (d, i) { return calView.getTextSize() + Math.floor(i / 6) * calView.getMonthYOffset(); })
+            .style("text-anchor", "start");
     }
 
-    drawContent(p, calendar, oldCalendar, transitionProgress) {
-        let x = 0;
-        let y = this.getTextSize() * 2;
-
-        for (let i = 0; i < 12; i++) {
-            this.drawMonth(p, x, y, calendar, oldCalendar, transitionProgress, i);
-            x += this.getMonthXOffset();
-            if (i % 6 === 5) {
-                x -= 6 * this.getMonthXOffset();
-                y += this.getMonthYOffset() + this.getTextSize();
-            }
-        }
-    }
-
-    drawMonth(p, startX, startY, calendar, oldCalendar, transitionProgress, month) {
-        let x = startX;
-        let y = startY;
-        let year = new Date().getFullYear();
-        for (let i = 0; i < Calendar.daysInMonth(month); i++) {
-            let date = new Date(year, month, i + 2);
-
-            let oldColor = [240, 240, 240];
-            let newColor = [240, 240, 240];
-            if (oldCalendar.getActivitiesForDate(date).length > 0) {
-                oldColor = oldCalendar.getColor();
-            }
-            if (calendar.getActivitiesForDate(date).length > 0) {
-                newColor = calendar.getColor();
-            }
-            let color = this.getColor(oldColor, newColor, transitionProgress)
-
-            p.fill(color);
-            p.rect(x, y, this.getDaySize(), this.getDaySize());
-
-            x += this.getDaySize() + this.getDayMargin();
-            if (i % 7 === 6) {
-                x -= (this.getDaySize() + this.getDayMargin()) * 7;
-                y += this.getDaySize() + this.getDayMargin();
-            }
-        }
+    drawCalendarContent(svg, data) {
+        let calView = this;
+        let monthArea = svg.selectAll(".monthRect")
+            .data(data)
+            .enter().append("g") // g elements are used in svg to group elements
+            .attr("transform", function (d, i) {
+                return 'translate(' + (i % 6) * calView.getMonthXOffset() + ','
+                    + (3/2 * calView.getTextSize() + Math.floor(i/6) * (calView.getMonthYOffset())) + ')'; })
+            .selectAll(".dayRect")
+            .data(function(d, i) { return d; }) // d is daysData[i]
+            .join("rect")
+            .attr("x", function (d, i) { return (i % 7) * (calView.getDaySize() + calView.getDayMargin()); })
+            .attr("y", function (d, i) { return Math.floor(i/7) * (calView.getDaySize() + calView.getDayMargin()); })
+            .attr("width", calView.getDaySize())
+            .attr("height", calView.getDaySize())
+            .style("fill", "#ffffff")
+            .transition().duration(1000)
+            .style("fill", function (d, i) { return d ? "#8dff81" : "#eeeeee"; });
     }
 
     getColor(oldColor, newColor, transitionProgress) {

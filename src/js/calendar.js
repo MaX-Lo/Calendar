@@ -53,7 +53,30 @@ export default class Calendar {
         return monthNames[monthNum];
     }
 
+    static monthNames() {
+        return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    }
+
     static dateToString(date) {
         return `${date.toISOString().substring(0, 10)}`;
     }
+
+    toBoolArray() {
+        let year = new Date().getFullYear();
+        let yearsData = [];
+        for (let monthNum = 0; monthNum < 12; monthNum++) {
+            let monthData = [];
+            for (let dayNum = 0; dayNum < Calendar.daysInMonth(monthNum); dayNum++) {
+                let date = new Date(year, monthNum, dayNum + 2);
+                if (this.getActivitiesForDate(date).length > 0) {
+                    monthData.push(true);
+                } else {
+                    monthData.push(false);
+                }
+            }
+            yearsData.push(monthData)
+        }
+        return yearsData;
+    }
+
 }

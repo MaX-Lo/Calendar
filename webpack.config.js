@@ -15,9 +15,6 @@ module.exports = {
         // path to backend, allows Spring to deliver the bundle
         path: '/Users/max/Projects/IntelliJProjects/calendar/src/main/resources/public' //path.resolve(__dirname, 'dist')
     },
-    externals: {
-        p5: 'p5'
-    },
     devtool: "inline-source-map",
     devServer: {
         contentBase: './dist',
