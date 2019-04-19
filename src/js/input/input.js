@@ -5,6 +5,8 @@ import 'bootstrap-datepicker/dist/css/bootstrap-datepicker.standalone.min.css'
 
 import {getCalendarCategories, addActivity, addCategory} from "../dataRepository";
 
+const ADD_CATEGORY_STR = "ADD CATEGORY";
+
 initResponseNotification();
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -12,22 +14,36 @@ document.addEventListener('DOMContentLoaded', function () {
     populateDropdown();
 });
 
-let addActivityButton = document.getElementById('addActivityBtn');
-addActivityButton.addEventListener('click', () => onAddActivityButtonClickHandler());
-let addCategoryButton = document.getElementById('addCategoryBtn');
-addCategoryButton.addEventListener('click', () => onAddCategoryButtonClickHandler());
+let addActivityButton = $('#addActivityBtn').click(() => onAddActivityButtonClickHandler());
+let addCategoryButton = $('#addCategoryBtn').click(() => onAddCategoryButtonClickHandler());
+let categoriesSelect = $('#categoriesSelect').change(function(){
+    if ($(this).val() === ADD_CATEGORY_STR) {
+        $("#addCategoryModal").modal();
+    }
+});
 
 function populateDropdown() {
     getCalendarCategories((categories) => setDropdownData(categories));
 }
 
 function setDropdownData(categories) {
+    clearCategorySelect();
     let selectList = document.getElementById('categoriesSelect');
     categories.forEach((category) => {
         let option = document.createElement("option");
         option.text = category.name;
         selectList.add(option);
     });
+
+    let option = document.createElement("option");
+    option.text = ADD_CATEGORY_STR;
+    selectList.add(option);
+}
+
+function clearCategorySelect() {
+    categoriesSelect.find('option')
+        .remove()
+        .end();
 }
 
 function initResponseNotification() {
@@ -77,6 +93,7 @@ function onAddCategoryButtonClickHandler() {
 
 function onAddCategoryResponse(responseStatus) {
     if (responseStatus === 201) {
+        populateDropdown();
         showSuccessNotificationMessage("Added Category!");
     } else {
         showErrorNotificationMessage(`Error adding Category! Response Status: ${responseStatus}`)
