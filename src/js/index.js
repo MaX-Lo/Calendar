@@ -35,9 +35,7 @@ function updateCalendarView() {
     if (calendars.length === 0) { return; }
     let calendar = calendars[currentCalendarIndex];
     if (!calendar) { return; }
-    calView.drawMonthLabels(svg);
-    calView.drawCalendarContent(svg, calendar.toBoolArray());
-    calView.highlightCurrentDay(svg, new Date());
+    calView.draw(svg, calendar.toBoolArray(), new Date());
     updateTitle(calendar.name + " Days");
 }
 

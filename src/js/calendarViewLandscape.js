@@ -1,6 +1,8 @@
 import Calendar from "./calendar"
 import CalendarView from  "./calendarView"
 
+
+
 export default class CalendarViewLandscape extends CalendarView {
 
     constructor(width = 0) {
@@ -42,6 +44,17 @@ export default class CalendarViewLandscape extends CalendarView {
         return this._width / 60;
     }
 
+    draw(svg, data, date) {
+        this.clear(svg);
+        this.drawMonthLabels(svg);
+        this.drawCalendarContent(svg, data);
+        this.drawCurrDayHighlight(svg, date);
+    }
+
+    clear(svg) {
+        svg.selectAll("*").remove();
+    }
+
     drawMonthLabels(svg) {
         let calView = this;
         let monthLabels = svg.selectAll(".monthLabel")
@@ -70,11 +83,11 @@ export default class CalendarViewLandscape extends CalendarView {
             .attr("width", calView.getDaySize())
             .attr("height", calView.getDaySize())
             .style("fill", "#ffffff")
-            .transition().duration(1000)
+            .transition().duration(CalendarView.TRANSITION_DURATION)
             .style("fill", function (d, i) { return d ? "#007bff" : "#eeeeee"; });
     }
 
-    highlightCurrentDay(svg, date) {
+    drawCurrDayHighlight(svg, date) {
         let month = date.getMonth();
         let day = date.getDate() - 1;
         console.log(`day ${day} month ${month}`);
@@ -88,6 +101,10 @@ export default class CalendarViewLandscape extends CalendarView {
             .attr("width", this.getDaySize())
             .attr("height", this.getDaySize())
             .style("fill-opacity", 0)
-            .style("stroke", "#ff1111") ;
+            .style("stroke", "#ff1111")
+            .style("stroke-width", 1.5)
+            .style("stroke-opacity", 0)
+            .transition().duration(CalendarView.TRANSITION_DURATION)
+            .style("stroke-opacity", 1) ;
     }
 }
