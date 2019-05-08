@@ -2,15 +2,19 @@ export default class Calendar {
     constructor(name = 'unknown name', color = [0, 30, 70], activityList = []) {
         this.color = color;
         this.activityList = activityList;
-        this.setActivities(activityList)
+        this.setActivities(activityList);
         this._name = name;
     }
 
-    setActivities(activityList) {
+    addActivities(activityList) {
         this.activityList = [];
         for (let activity of activityList) {
             this.activityList.push(activity);
         }
+    }
+
+    setActivities(activityList) {
+        this.activityList = activityList;
     }
 
     getActivities() {
@@ -23,7 +27,6 @@ export default class Calendar {
     }
 
     getActivitiesForDate(date) {
-        //console.log(date, this.activityList);
         return this.activityList.filter((activity) => (activity.date === Calendar.dateToString(date)));
     }
 
@@ -49,12 +52,15 @@ export default class Calendar {
     }
 
     static monthName(monthNum) {
-        let monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        return monthNames[monthNum];
+        return Calendar.monthNames()[monthNum];
     }
 
     static monthNames() {
         return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    }
+
+    static daysOfWeek() {
+        return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     }
 
     static dateToString(date) {
@@ -77,6 +83,17 @@ export default class Calendar {
             yearsData.push(monthData)
         }
         return yearsData;
+    }
+
+    activitiesByWeekday(dayOfWeek) {
+        let activities = [];
+        for (let i = 0; i < this.activityList.length; i++) {
+            let date = new Date(this.activityList[i].date);
+            if (date.getDay() === dayOfWeek) {
+                activities.push(this.activityList[i])
+            }
+        }
+        return activities;
     }
 
 }

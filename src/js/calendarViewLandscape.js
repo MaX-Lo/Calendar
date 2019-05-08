@@ -48,6 +48,7 @@ export default class CalendarViewLandscape extends CalendarView {
         this.clear(svg);
         this.drawMonthLabels(svg);
         this.drawCalendarContent(svg, data);
+        this.drawMondayDots(svg);
         this.drawCurrDayHighlight(svg, date);
     }
 
@@ -67,6 +68,40 @@ export default class CalendarViewLandscape extends CalendarView {
             .style("fill", "#222222");
     }
 
+    /**
+     * for each month draw a dot above the column corresponding to mondays
+     * @param  svg - to draw on
+     * @param data - a array of length 12 containing for each month (index) which column index corresponds
+     *               to mondays
+     */
+    drawMondayDots(svg) {
+        let data = [];
+        let date = new Date();
+        for (let monthIdx = 0; monthIdx < 12; monthIdx++) {
+            date.setMonth(monthIdx);
+            date.setDate(1);
+            console.log(date);
+            let mondayColumnIdx =  (8 - date.getDay()) % 7;
+            console.log(mondayColumnIdx);
+            data.push(mondayColumnIdx);
+        }
+        console.log("Month data: " + data);
+        let calView = this;
+
+        let mondayDots = svg.selectAll(".mondayDots")
+            .data(data)
+            .join("circle")
+            .attr("transform", function (d, i) {
+                return 'translate(' + (i % 6) * calView.getMonthXOffset() + ','
+                    + (2 * calView.getTextSize() + Math.floor(i/6) * (calView.getMonthYOffset())) + ')'; })
+            .attr("cx", function (d, i) {
+                return d * (calView.getDaySize() + calView.getDayMargin()) + calView.getDaySize() / 2
+            })
+            .attr("cy", -calView.getDaySize()/4)
+            .attr("r", 3)
+            .style("fill", "#007bff")
+    }
+
     drawCalendarContent(svg, data) {
         let calView = this;
         let monthArea = svg.selectAll(".monthRect")
@@ -74,7 +109,7 @@ export default class CalendarViewLandscape extends CalendarView {
             .enter().append("g") // g elements are used in svg to group elements
             .attr("transform", function (d, i) {
                 return 'translate(' + (i % 6) * calView.getMonthXOffset() + ','
-                    + (3/2 * calView.getTextSize() + Math.floor(i/6) * (calView.getMonthYOffset())) + ')'; })
+                    + (2 * calView.getTextSize() + Math.floor(i/6) * (calView.getMonthYOffset())) + ')'; })
             .selectAll(".dayRect")
             .data(function(d, i) { return d; }) // d is daysData[i]
             .join("rect")
@@ -90,10 +125,9 @@ export default class CalendarViewLandscape extends CalendarView {
     drawCurrDayHighlight(svg, date) {
         let month = date.getMonth();
         let day = date.getDate() - 1;
-        console.log(`day ${day} month ${month}`);
         let x = (month % 6) * this.getMonthXOffset() +
             (day % 7) * (this.getDaySize() + this.getDayMargin());
-        let y = 3/2 * this.getTextSize() + Math.floor(month / 6) * this.getMonthYOffset() +
+        let y = 2 * this.getTextSize() + Math.floor(month / 6) * this.getMonthYOffset() +
             Math.floor(day/7) * (this.getDaySize() + this.getDayMargin());
         svg.selectAll(".monthLabel").data([1]).join("rect")
             .attr("x", x)

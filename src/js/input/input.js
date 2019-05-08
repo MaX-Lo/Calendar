@@ -5,8 +5,6 @@ import 'bootstrap-datepicker/dist/css/bootstrap-datepicker.standalone.min.css'
 
 import {getCalendarCategories, addActivity, addCategory} from "../dataRepository";
 
-const ADD_CATEGORY_STR = "ADD CATEGORY";
-
 initResponseNotification();
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -16,11 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 let addActivityButton = $('#addActivityBtn').click(() => onAddActivityButtonClickHandler());
 let addCategoryButton = $('#addCategoryBtn').click(() => onAddCategoryButtonClickHandler());
-let categoriesSelect = $('#categoriesSelect').change(function(){
-    if ($(this).val() === ADD_CATEGORY_STR) {
-        $("#addCategoryModal").modal();
-    }
-});
+let openAddCategoryModal = $('#openNewCategoryModalBtn').click(() => $("#addCategoryModal").modal());
 
 function populateDropdown() {
     getCalendarCategories((categories) => setDropdownData(categories));
@@ -34,10 +28,6 @@ function setDropdownData(categories) {
         option.text = category.name;
         selectList.add(option);
     });
-
-    let option = document.createElement("option");
-    option.text = ADD_CATEGORY_STR;
-    selectList.add(option);
 }
 
 function clearCategorySelect() {
