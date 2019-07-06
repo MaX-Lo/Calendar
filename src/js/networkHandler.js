@@ -1,15 +1,16 @@
 // ToDo having to exchange each time before building seems dirty and wrong...
 // const BASE_URL = 'http://localhost:8080';
-const BASE_URL = 'http://192.168.0.106:8080';
+const BASE_URL = 'http://localhost:5000'  // 'http://192.168.0.106:8080';
 
 export function fetchActivities(category, callback) {
-    let endpoint = BASE_URL + `/activities/search/findByCategory?category=${category}`;
+    let endpoint = BASE_URL + `/activities/${category}`;  //`/activities/search/findByCategory?category=${category}`;
+
     let request = new XMLHttpRequest();
     request.open('GET', endpoint, true);
     request.onload = function() {
         if (request.status >= 200 && request.status < 400) {
             let data = JSON.parse(this.response);
-            callback(data._embedded.activities);
+            callback(data);
         } else {
             console.log('error');
         }
@@ -27,7 +28,7 @@ export function fetchCategories(callback) {
 
         if (request.status >= 200 && request.status < 400) {
             let data = JSON.parse(this.response);
-            callback(data._embedded.categories);
+            callback(data);
         } else {
             console.log('error');
         }
