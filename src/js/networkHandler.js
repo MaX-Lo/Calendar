@@ -1,6 +1,6 @@
 // ToDo having to exchange each time before building seems dirty and wrong...
 // const BASE_URL = 'http://localhost:8080';
-const BASE_URL = 'http://192.168.0.106:8080';
+const BASE_URL = 'https://max-lo.de:5000';
 
 export function fetchActivities(category, callback) {
     let endpoint = BASE_URL + `/activities/search/findByCategory?category=${category}`;
