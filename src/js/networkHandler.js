@@ -1,6 +1,7 @@
 // ToDo having to exchange each time before building seems dirty and wrong...
 // const BASE_URL = 'http://localhost:8080';
 let baseUrl = window.location.origin;
+console.log("Use Base URL " + baseUrl);
 const BASE_URL = baseUrl;
 
 
