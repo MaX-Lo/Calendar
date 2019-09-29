@@ -21,6 +21,11 @@ function populateDropdown() {
 }
 
 function setDropdownData(categories) {
+    console.log(categories);
+    if (categories == null) {
+        return;
+    }
+
     clearCategorySelect();
     let selectList = document.getElementById('categoriesSelect');
     categories.forEach((category) => {
@@ -31,9 +36,12 @@ function setDropdownData(categories) {
 }
 
 function clearCategorySelect() {
-    categoriesSelect.find('option')
-        .remove()
-        .end();
+    let categoriesSelect = document.getElementById('categoriesSelect');
+
+    let optCount = categoriesSelect.options.length;
+    for (let i = 0; i < optCount; i++) {
+        categoriesSelect.remove(0);
+    }
 }
 
 function initResponseNotification() {

@@ -80,9 +80,7 @@ export default class CalendarViewLandscape extends CalendarView {
         for (let monthIdx = 0; monthIdx < 12; monthIdx++) {
             date.setMonth(monthIdx);
             date.setDate(1);
-            console.log(date);
             let mondayColumnIdx =  (8 - date.getDay()) % 7;
-            console.log(mondayColumnIdx);
             data.push(mondayColumnIdx);
         }
         console.log("Month data: " + data);
