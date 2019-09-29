@@ -7,23 +7,15 @@ const BASE_URL = baseUrl;
 
 export function fetchActivities(category, callback) {
     let endpoint = BASE_URL + `/activities/${category}`;
-    let request = new XMLHttpRequest();
-    request.open('GET', endpoint, true);
-    request.onload = function() {
-        if (request.status >= 200 && request.status < 400) {
-            let data = JSON.parse(request.response);
-            callback(data);
-        } else {
-            console.log('error');
-        }
-    };
-    request.send();
-
+    fetch(endpoint, callback)
 }
 
 export function fetchCategories(callback) {
     let endpoint = BASE_URL + '/categories';
+    fetch(endpoint, callback);
+}
 
+function fetch(endpoint, callback) {
     let request = new XMLHttpRequest();
     request.open('GET', endpoint, true);
     request.onload = function() {

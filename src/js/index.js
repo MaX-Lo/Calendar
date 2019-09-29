@@ -115,8 +115,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
 let nextCalendarButton = document.getElementById('nextCalendarBtn');
 nextCalendarButton.addEventListener('click', () => onNextCalendarBtnClickHandler());
+
 let prevCalendarButton = document.getElementById('prevCalendarBtn');
 prevCalendarButton.addEventListener('click', () => onPrevCalendarBtnClickHandler());
+
+let addButton = document.getElementById('addBtn');
+addButton.addEventListener('click', () => onAddBtnClickHandler());
 
 
 function updateCalendarView() {
@@ -138,6 +142,10 @@ function onNextCalendarBtnClickHandler() {
 function onPrevCalendarBtnClickHandler() {
     currentCalendarIndex = (currentCalendarIndex - 1 + calendars.length) % calendars.length;
     updateCalendarView();
+}
+
+function onAddBtnClickHandler() {
+    window.location.href = window.location.origin + '/input.html'
 }
 
 function populateCalendars() {

@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
 let addActivityButton = $('#addActivityBtn').click(() => onAddActivityButtonClickHandler());
 let addCategoryButton = $('#addCategoryBtn').click(() => onAddCategoryButtonClickHandler());
 let openAddCategoryModal = $('#openNewCategoryModalBtn').click(() => $("#addCategoryModal").modal());
+let backButton = $('#backBtn').click(() => onBackButtonClickHandler());
 
 function populateDropdown() {
     getCalendarCategories((categories) => setDropdownData(categories));
@@ -75,7 +76,7 @@ function onAddActivityButtonClickHandler() {
 }
 
 function onAddActivityResponse(responseStatus) {
-    if (responseStatus === 201) {
+    if (responseStatus === 201 || responseStatus === 200) {
         showSuccessNotificationMessage("Added Activity!");
     } else {
         showErrorNotificationMessage(`Error adding activity! Response Status: ${responseStatus}`)
@@ -90,7 +91,7 @@ function onAddCategoryButtonClickHandler() {
 }
 
 function onAddCategoryResponse(responseStatus) {
-    if (responseStatus === 201) {
+    if (responseStatus === 201 || responseStatus === 200) {
         populateDropdown();
         showSuccessNotificationMessage("Added Category!");
     } else {
@@ -115,4 +116,8 @@ function showMessage(messageElement, message) {
     messageElement.html(message);
     messageElement.show();
     setTimeout(() => messageElement.hide(), 4000);
+}
+
+function onBackButtonClickHandler() {
+    window.location.href = window.location.origin
 }

@@ -12,8 +12,7 @@ module.exports = {
     },
     output: {
         filename: '[name].bundle.js',
-        // path to backend, allows Spring to deliver the bundle
-        path: path.resolve(__dirname, 'dist') //'/Users/max/Projects/IntelliJProjects/calendar/src/main/resources/public' //path.resolve(__dirname, 'dist')
+        path: path.resolve(__dirname, 'dist')
     },
     devtool: "inline-source-map",
     devServer: {
