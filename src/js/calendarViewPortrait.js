@@ -10,12 +10,12 @@ export default class CalendarViewLandscape extends CalendarView {
     }
 
     getDaySize() {
-        // eg. for 16 day in a line
-        // _width = 6*7 * day_size + 6*6 * day_margin + 5 * month_margin
-        // _width = 42 * day_size + 36 * day_size / 10 + 5 * day_size / 2
-        // _width = day_size * (42 + 36/10 + 5/2)
-        // _width = day_size * 48.1
-        return this.width / 48.1
+        // eg. for 7 days in a line
+        // _width = 7 * day_size + 6 * day_margin
+        // _width = 7 * day_size + 6 * day_size / 10
+        // _width = day_size * (7 + 6/10)
+        // _width = day_size * 7.6
+        return this.width / 7.6
     }
 
     getDayMargin() {
@@ -23,23 +23,29 @@ export default class CalendarViewLandscape extends CalendarView {
     }
 
     get height() {
-        return (this.getMonthYOffset() + this.getTextSize()) * 2;
+        return this.getMonthYOffset(12);
     }
 
     getMonthMargin() {
         return this.getDaySize() / 2;
     }
 
-    getMonthYOffset() {
-        return 5*this.getDaySize() + 4*this.getDayMargin() + this.getMonthMargin() + 1.5 * this.getTextSize();
+    getMonthYOffset(monthIdx) {
+        return this.getTextSize() +
+            monthIdx * (5*this.getDaySize() + 4*this.getDayMargin() + this.getMonthMargin()
+                + 2 * this.getTextSize() + (this.getMondayHintRadi() * 2 + 8));
     }
 
     getMonthXOffset() {
-        return 7*this.getDaySize() + 6*this.getDayMargin() + this.getMonthMargin();
+        return 0;
     }
 
     getTextSize() {
-        return this._width / 60;
+        return this.width / 25;
+    }
+
+    getMondayHintRadi() {
+        return this.getTextSize() / 4;
     }
 
     /**
@@ -65,10 +71,11 @@ export default class CalendarViewLandscape extends CalendarView {
             .data(Calendar.monthNames())
             .enter().append("text")
             .text(function (d) { return d;})
-            .attr("x", function (d, i) { return (i % 6) * calView.getMonthXOffset(); })
-            .attr("y", function (d, i) { return calView.getTextSize() + Math.floor(i / 6) * calView.getMonthYOffset(); })
+            .attr("x", function (d, i) { return calView.getMonthXOffset(); })
+            .attr("y", function (d, i) { return calView.getMonthYOffset(i); })
             .style("text-anchor", "start")
-            .style("fill", "#222222");
+            .style("fill", "#222222")
+            .style("font-size", this.getTextSize().toString() + "px");
     }
 
     /**
@@ -90,13 +97,13 @@ export default class CalendarViewLandscape extends CalendarView {
             .data(data)
             .join("circle")
             .attr("transform", function (d, i) {
-                return 'translate(' + (i % 6) * calView.getMonthXOffset() + ','
-                    + (2 * calView.getTextSize() + Math.floor(i/6) * (calView.getMonthYOffset())) + ')'; })
+                return 'translate(' + i * calView.getMonthXOffset() + ','
+                    + (2 * calView.getTextSize() + calView.getMonthYOffset(i)) + ')'; })
             .attr("cx", function (d, i) {
                 return d * (calView.getDaySize() + calView.getDayMargin()) + calView.getDaySize() / 2
             })
             .attr("cy", -calView.getDaySize()/4)
-            .attr("r", 3)
+            .attr("r", this.getMondayHintRadi())
             .style("fill", "#007bff")
     }
 
@@ -106,8 +113,8 @@ export default class CalendarViewLandscape extends CalendarView {
             .data(data)
             .enter().append("g") // g elements are used in svg to group elements
             .attr("transform", function (d, i) {
-                return 'translate(' + (i % 6) * calView.getMonthXOffset() + ','
-                    + (2 * calView.getTextSize() + Math.floor(i/6) * (calView.getMonthYOffset())) + ')'; })
+                return 'translate(' + i * calView.getMonthXOffset() + ','
+                    + (2 * calView.getTextSize() + calView.getMonthYOffset(i)) + ')'; })
             .selectAll(".dayRect")
             .data(function(d, i) { return d; }) // d is daysData[i]
             .join("rect")
@@ -123,9 +130,9 @@ export default class CalendarViewLandscape extends CalendarView {
     drawCurrDayHighlight(date) {
         let month = date.getMonth();
         let day = date.getDate() - 1;
-        let x = (month % 6) * this.getMonthXOffset() +
+        let x = month * this.getMonthXOffset() +
             (day % 7) * (this.getDaySize() + this.getDayMargin());
-        let y = 2 * this.getTextSize() + Math.floor(month / 6) * this.getMonthYOffset() +
+        let y = 2 * this.getTextSize() + this.getMonthYOffset(month) +
             Math.floor(day/7) * (this.getDaySize() + this.getDayMargin());
         this.svg.selectAll(".monthLabel").data([1]).join("rect")
             .attr("x", x)

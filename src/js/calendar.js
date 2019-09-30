@@ -67,6 +67,12 @@ export default class Calendar {
         return `${date.toISOString().substring(0, 10)}`;
     }
 
+    /**
+     * converts the data to a bool array signaling whether the day corresponding to the index contains
+     * an activity
+     * @returns [[]] - an array of size 12 with each element being an array containing as elements a boolean value
+     * for each day
+     */
     toBoolArray() {
         let year = new Date().getFullYear();
         let yearsData = [];

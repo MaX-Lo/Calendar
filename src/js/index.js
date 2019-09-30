@@ -1,24 +1,24 @@
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import * as d3 from 'd3'
 
 import '../css/styles.css'
 
 import Calendar from './calendar';
-import CalendarView from './calendarViewLandscape';
+import CalendarViewLandscape from './calendarViewLandscape';
+import CalendarViewPortrait from './calendarViewPortrait';
 import {getCalendarCategories, getCalendarData} from "./dataRepository";
 import {fillBarChart} from "./frequencyBarChart";
 
-let calView = new CalendarView();
-calView.width = getCalendarContainerWidth();
+let calView;
+if(isMobile()) {
+    calView = new CalendarViewPortrait(getCalendarContainerWidth());
+} else {
+    calView = new CalendarViewLandscape(getCalendarContainerWidth());
+}
 
 let calendars = [];
 let currentCalendarIndex = 0;
 
-let svg = d3.select("#calendarContainer").append("svg")
-    .attr("width", calView.width)
-    .attr("height", calView.height)
-    .append("g");
 
 fillBarChart(calendars[currentCalendarIndex], true);
 
@@ -48,23 +48,38 @@ function updateCalendarView() {
     calendars[currentCalendarIndex].activitiesByWeekday(Calendar.daysOfWeek()[0]);
     fillBarChart(calendars[currentCalendarIndex],  false);
 
-    calView.draw(svg, calendar.toBoolArray(), new Date());
+    calView.draw(calendar.toBoolArray(), new Date());
     updateTitle(calendar.name + " Days");
 }
+
+/**
+ * sets the current calendar index to the next calendar (or first one in case the current
+ * calendar is the last one) and updates the calendar view afterwards
+ */
 
 function onNextCalendarBtnClickHandler() {
     currentCalendarIndex = (currentCalendarIndex + 1) % calendars.length;
     updateCalendarView();
 }
 
+
+/**
+ * sets the current calendar index to the previous calendar (or last one in case the current
+ * calendar is the first one) and updates the calendar view afterwards
+ */
 function onPrevCalendarBtnClickHandler() {
     currentCalendarIndex = (currentCalendarIndex - 1 + calendars.length) % calendars.length;
     updateCalendarView();
 }
 
+
+/**
+ * handles a add button click by navigating to the input page
+ */
 function onAddBtnClickHandler() {
     window.location.href = window.location.origin + '/input.html'
 }
+
 
 function populateCalendars() {
     getCalendarCategories((categories) => {
@@ -79,6 +94,7 @@ function populateCalendars() {
         }
     });
 }
+
 
 function addCalendar(category) {
     let calendar;
@@ -103,6 +119,10 @@ function getCalendarContainerWidth() {
     return document.getElementById('calendarContainer').offsetWidth;
 }
 
+/**
+ * updates the page title via a fading animation
+ * @param title - the new title
+ */
 function updateTitle(title) {
     let $title = $("#calendarTitle");
     $title.fadeOut(500);
@@ -110,12 +130,26 @@ function updateTitle(title) {
     $title.fadeIn(500);
 }
 
+/**
+ * updates the date element with the current date
+ */
 function updateDateElement() {
     let dateElement = document.getElementById('date');
     dateElement.innerHTML = getDateString();
 }
 
+/**
+ * get the current date formated as string
+ * @returns {string} the current date as DD.MM
+ */
 function getDateString() {
     let date = new Date();
     return `${date.getDate()}.${date.getMonth() + 1}.`;
+}
+
+/**
+ * returns whether the current user agent is a mobile device
+ */
+function isMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 }
