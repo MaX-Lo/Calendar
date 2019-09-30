@@ -7,7 +7,7 @@ import Calendar from './calendar';
 import CalendarViewLandscape from './calendarViewLandscape';
 import CalendarViewPortrait from './calendarViewPortrait';
 import {getCalendarCategories, getCalendarData} from "./dataRepository";
-import {fillBarChart} from "./frequencyBarChart";
+import BarChart from "./frequencyBarChart";
 
 let calView;
 if(isMobile()) {
@@ -20,7 +20,8 @@ let calendars = [];
 let currentCalendarIndex = 0;
 
 
-fillBarChart(calendars[currentCalendarIndex], true);
+let barChart = new BarChart(getCalendarContainerWidth());
+barChart.fillBarChart(calendars[currentCalendarIndex], true);
 
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -46,7 +47,7 @@ function updateCalendarView() {
     let calendar = calendars[currentCalendarIndex];
     if (!calendar) { return; }
     calendars[currentCalendarIndex].activitiesByWeekday(Calendar.daysOfWeek()[0]);
-    fillBarChart(calendars[currentCalendarIndex],  false);
+    barChart.fillBarChart(calendars[currentCalendarIndex],  false);
 
     calView.draw(calendar.toBoolArray(), new Date());
     updateTitle(calendar.name + " Days");

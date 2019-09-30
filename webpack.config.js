@@ -28,6 +28,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             hash: true,
             title: 'Calendar',
+            favicon: 'favicon.ico',
             template: './src/index.html',
             chunks: ['main'],
             filename: './index.html'
